@@ -1,0 +1,17 @@
+{
+  "name": "the-most-common-path",
+  "version": "1.0.0",
+  "description": "The most common path",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "the",
+    "most",
+    "common",
+    "path"
+  ],
+  "author": "gAmadorH gamadorh93@gmail.com",
+  "license": "MIT"
+}
