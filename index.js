@@ -2,42 +2,54 @@
 
 const input = require('./input.json')
  
-// user state transition = { userId: [ status, ... ], ... } 
-const userTransitions = { }
+// users state transition = { userId: [ stateId, ... ], ... }
+const usersTransitions = { }
 
-input.map(element => {
-  const [ userId, status ] = element.split(',')
+// total transitions = [ { key: ABC, count: n }, ... ]
+const totalTransitions = [ ]
+let countMostFreqTransition = 0
 
-  if (status) {
-    if (userTransitions[userId]) userTransitions[userId].push(status)
-    else userTransitions[userId] = [ status ]
+input.forEach(element => {
+  const [ userId, stateId ] = element.split(',')
+
+    if (!usersTransitions[userId])
+      usersTransitions[userId] = [ ]
+
+    usersTransitions[userId].push(stateId)
+})
+
+Object.keys(usersTransitions).forEach(UserId => {
+  const userTransition = usersTransitions[UserId]
+
+  for (let i = 2; i < userTransition.length; i++) {
+    const key = userTransition[i - 2] + userTransition[i - 1] + userTransition[i]
+    const currentTransition = totalTransitions.find(transition => transition.key === key)
+
+    let count = 1
+    if (currentTransition) {
+      currentTransition.count++
+      count = currentTransition.count
+    } else {
+      totalTransitions.push({ key, count: 1 })
+    }
+
+    if (count > countMostFreqTransition)
+      countMostFreqTransition = count
   }
 })
 
-let totalFreqTransitions = { }
-let mostFreqTransition = {
-  transition: '',
-  count: 0
+
+let MostFreqTransitions = totalTransitions.filter(({ count}) => count >= countMostFreqTransition)
+
+if (MostFreqTransitions.length > 1) {
+  MostFreqTransitions = MostFreqTransitions.map(MostFreqTransition => {
+    return {
+      key: MostFreqTransition.key.split('').sort().join(''),
+      count: MostFreqTransition.count
+    }
+  })
 }
 
-Object.keys(userTransitions).forEach(UserId => {
-  const userTransition = userTransitions[UserId]
-
-  for (let i = 0, j = 2; i < userTransition.length; i++, j++) {
-    if (userTransition[j]) {
-      let indx = userTransition[j - 2] + userTransition[j - 1] + userTransition[j] + ''
-
-      if (totalFreqTransitions[indx]) totalFreqTransitions[indx]++
-      else totalFreqTransitions[indx] = 1
-
-      if (mostFreqTransition.count < totalFreqTransitions[indx]) {
-        mostFreqTransition.transition = indx
-        mostFreqTransition.count = totalFreqTransitions[indx]
-      }
-    }
-  }
+MostFreqTransitions.forEach(mostFreqTransition => {
+  console.log(mostFreqTransition.key.split('').sort().join('->'))
 })
-
-
-console.log('The most common path')
-console.log(mostFreqTransition.transition)
